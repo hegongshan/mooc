@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<mapper namespace="com.hegongshan.mooc.dao.ICommentDAO">
+	<resultMap type="comment" id="commentResult">
+		<id property="commentId" column="comment_id"/>
+		<result property="content" column="content"/>
+		<result property="releaseTime" column="release_time"/>
+		<!-- <result property="parentId" column="parent_id"/> -->
+		<association property="student" column="student_id" select="com.hegongshan.mooc.dao.IStudentDAO.findById"/>		
+		<association property="course" column="course_id" select="com.hegongshan.mooc.dao.ICourseDAO.getCourseById"/>
+	</resultMap>
+	
+	<insert id="saveComment" parameterType="comment">
+		insert into 
+		t_comment(content,release_time,student_id,course_id)
+		values(#{content},now(),#{student.studentId},#{course.courseId})
+	</insert>
+	
+	<delete id="removeCommentById" parameterType="Integer">
+		delete from t_comment
+		where comment_id = #{commentId}
+	</delete>
+	
+	<delete id="removeCommentBatch" parameterType="Integer">
+		delete from t_comment
+		where comment_id in
+		<foreach item="commentId" collection="array" open="(" separator="," close=")">
+			#{commentId}
+		</foreach>
+	</delete>
+	
+	<select id="listAllCommentByPage" resultMap="commentResult">
+		select * 
+		from t_comment
+		limit #{startRow},#{pageSize}
+	</select>
+	
+	<select id="listCommentByCourseId" parameterType="Integer" resultMap="commentResult">
+		select * 
+		from t_comment 
+		where course_id = #{courseId}
+	</select>
+	
+	<select id="countAllComment" resultType="Integer">
+		select count(*) 
+		from t_comment
+	</select>
+	
+</mapper>

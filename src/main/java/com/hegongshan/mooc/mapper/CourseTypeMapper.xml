@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<mapper namespace="com.hegongshan.mooc.dao.ICourseTypeDAO">
+	<resultMap type="courseType" id="courseTypeResult">
+		<id property="courseTypeId" column="courseTypeId"/>
+		<result property="courseTypeName" column="courseTypeName"/>
+		<result property="releaseTime" column="releaseTime"/>
+	</resultMap>
+	
+	<insert id="saveCourseType" parameterType="courseType">
+		insert into t_course_type(courseTypeName,releaseTime) values(#{courseTypeName},now())
+	</insert>
+	
+	<delete id="removeCourseTypeById" parameterType="Integer">
+		delete from t_course_type 
+		where courseTypeId = #{courseTypeId}
+	</delete>
+	
+	<delete id="removeCourseTypeBatch" parameterType="Integer">
+		delete from t_course_type
+		where courseTypeId in
+		<foreach item="courseTypeId" collection="array" open="(" separator="," close=")">
+			#{courseTypeId}
+		</foreach>
+	</delete>
+		
+	<update id="updateCourseType" parameterType="courseType">
+		update t_course_type 
+		set courseTypeName = #{courseTypeName},releaseTime = now()
+		where courseTypeId = #{courseTypeId}
+	</update>
+	
+	<select id="getCourseTypeById" parameterType="Integer" resultMap="courseTypeResult">
+		select * 
+		from t_course_type
+		where courseTypeId = #{courseTypeId}
+	</select>
+	
+	<select id="listAllCourseType" resultMap="courseTypeResult">
+		select * from t_course_type
+	</select>
+</mapper>

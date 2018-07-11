@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<mapper namespace="com.hegongshan.mooc.dao.ICourseDAO">
+	<resultMap type="course" id="courseResult">
+		<id property="courseId" column="course_id"/>
+		<result property="courseName" column="course_name"/>
+		<result property="description" column="description"/>
+		<result property="coverImagePath" column="cover_image_path"/>
+		<result property="releaseTime" column="release_time"/>
+		<result property="studentNumber" column="student_number"/>		
+		<result property="resourceSrc" column="resource_src"/>	
+		<association property="teacher" column="teacher_id" 
+		select="com.hegongshan.mooc.dao.ITeacherDAO.getTeacherById"></association>
+		<association property="courseType" column="course_type_id" 
+		select="com.hegongshan.mooc.dao.ICourseTypeDAO.getCourseTypeById"></association>
+		<association property="comments" column="course_id" 
+		select="com.hegongshan.mooc.dao.ICommentDAO.listCommentByCourseId"></association>
+		<collection property="lessons" column="course_id" 
+		select="com.hegongshan.mooc.dao.ILessonDAO.listLessonByCourseId"></collection>
+	</resultMap>
+	
+	<insert id="saveCourse" parameterType="course">
+		insert into t_course(course_name,description,cover_image_path,teacher_id,course_type_id,release_time)
+		values(#{courseName},#{description},#{coverImagePath},#{teacher.teacherId},#{courseType.courseTypeId},now())
+	</insert>
+	
+	<delete id="removeCourseById" parameterType="Integer">
+		delete from t_course where course_id = #{courseId}
+	</delete>
+	
+	<update id="updateCourse" parameterType="course">
+		update t_course
+		<set>
+			<if test="courseName != null and courseName != ''">
+				course_name = #{courseName},
+			</if>
+			<if test="courseType != null">
+				course_type_id = #{courseType.courseTypeId},
+			</if>
+			<if test="description != null and description != ''">
+				description = #{description},
+			</if>
+			<if test="coverImagePath != null and coverImagePath != ''">
+				cover_image_path = #{coverImagePath},
+			</if>
+			<if test="studentNumber != null and studentNumber != ''">
+				student_number = #{studentNumber},
+			</if>
+			<if test="resourceSrc != null and resourceSrc != ''">
+				resource_src = #{resourceSrc},
+			</if>
+		</set>
+		where course_id = #{courseId}
+	</update>
+	
+	<select id="getCourseById" parameterType="Integer" resultMap="courseResult" >
+		select * from t_course where course_id = #{courseId}
+	</select>
+	
+	<select id="getCourseByCourseNameLike" parameterType="String" resultMap="courseResult" >
+		<bind name="pattern" value="'%' + _parameter + '%'" />
+		select * from t_course where course_name like #{pattern}
+	</select>
+			
+	<select id="listCourseByStudentId" parameterType="Integer" resultMap="courseResult">
+		select * from t_course
+		where course_id 
+		in(select course_id from t_r_student_course where student_id = #{studentId})
+	</select>
+	
+	<select id="listCourseByTeacherId" parameterType="Integer" resultMap="courseResult">
+		select * from t_course 
+		where teacher_id = #{teacherId} order by course_id desc
+	</select>
+	
+	<select id="listCourseByCourseTypeIdAndPage" parameterType="Integer" resultMap="courseResult">
+		select * from t_course 
+		where course_type_id = #{courseTypeId}
+		order by course_id desc 
+		limit #{startPage},#{pageSize} 
+	</select>
+	
+	<select id="listCourseByPage" parameterType="Integer" resultMap="courseResult">
+		select * from t_course 
+		order by course_id desc
+		<if test="startPage != null and pageSize != null">
+			limit #{startPage},#{pageSize} 
+		</if> 		
+	</select>
+	
+	<select id="countAllCourse" parameterType="Integer" resultType="Integer">
+		select count(*) from t_course
+	</select>
+	
+	<select id="countCourseByCourseTypeId" parameterType="Integer" resultType="Integer">
+		select count(*) from t_course where course_type_id = #{courseTypeId}
+	</select>
+	
+	<select id="countCourseByTeacherId" parameterType="Integer" resultType="Integer">
+		select count(*) from t_course where teacher_id = #{teacherId}
+	</select>
+</mapper>

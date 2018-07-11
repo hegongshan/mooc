@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<mapper namespace="com.hegongshan.mooc.dao.IAdminDAO">
+	<resultMap type="admin" id="adminResult">
+		<id property="adminId" column="admin_id"/>
+		<result property="username" column="username"/>
+		<result property="password" column="password"/>
+		<result property="nickname" column="nickname"/>		
+		<result property="imageSrc" column="image_src"/>
+	</resultMap>
+	
+	<update id="updateAdmin" parameterType="admin">
+		update t_admin
+		<set>
+			<if test="password != null">
+				password = #{password},
+			</if>
+			<if test="nickname != null and nickname != ''">
+				nickname = #{nickname},
+			</if>
+			<if test="imageSrc != null and imageSrc != ''">
+				image_src = #{imageSrc},
+			</if>
+		</set>
+		where admin_id = #{adminId}
+	</update>
+			
+	<select id="getAdminByUsernameAndPassword" parameterType="admin" resultMap="adminResult" >
+		select *
+		from t_admin 
+		where username = #{username} and password = #{password}
+	</select>
+	
+	<select id="getAdminById" parameterType="Integer" resultMap="adminResult">
+		select * 
+		from t_admin
+		where admin_id = #{adminId}
+	</select>
+</mapper>

@@ -1,0 +1,74 @@
+@media(min-width:768px) {
+	.carousel{
+		height:410px; 
+	}
+	.carousel .item{
+		max-height:410px;        
+	}
+	.carousel .item img{
+		width:120%;
+	}
+	.list-group-item{
+		padding:19px;
+		line-height:25px;
+		font-size:16px;
+	}
+	
+	.form-group .input{
+		width:600px;
+	}
+	.courseDetail{
+		margin:20px;
+	}
+	.pager > .active > a,
+	.pager > .active > a:hover,
+	.pager > .active > a:focus{
+	   color: #fff;
+	   background-color: #337ab7;
+	}
+}
+.thumbnail{
+	padding:0px;
+}
+.thumbnail .thumbnail-plugin-img{
+	height:150px;
+}
+.thumbnail .thumbnail-plugin-caption{
+	height:50px;
+	overflow: hidden;
+}
+.list-inline{
+	margin:10px 0px;
+	padding-left:6px;
+}
+.list-inline li {
+	margin:10px 0px;		
+}
+.img-circle-min{
+	width:28px;
+	height:28px;
+}
+.img-circle-default{
+	width:50px;
+	height:50px;
+}
+.img-circle-plugin{
+	width:150px;
+	height:150px;
+}
+.bootstrap-body{
+	padding-top:80px;
+}
+.input-group .form-addon{
+	background:white;
+}
+.breadcrumb,.well-white{
+	background:white;
+}
+.panel-body {
+	border:0px white solid;
+}
+.authTeacher{
+	color:orange;
+	font-weight:bold;
+}

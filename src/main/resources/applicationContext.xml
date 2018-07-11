@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"	
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	 					http://www.springframework.org/schema/beans/spring-beans.xsd
+	 					http://www.springframework.org/schema/aop
+        				http://www.springframework.org/schema/aop/spring-aop.xsd
+        				http://www.springframework.org/schema/context
+        				http://www.springframework.org/schema/context/spring-context.xsd
+        				http://www.springframework.org/schema/tx
+        				http://www.springframework.org/schema/tx/spring-tx.xsd">	
+	
+	<bean id="propertyConfigurer"
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>classpath:jdbc.properties</value>
+				<value>classpath:mail.properties</value>
+			</list>
+		</property>
+	</bean>
+		
+	<context:component-scan base-package="com.hegongshan.mooc.service"/>
+	
+    <!-- 配置数据源 -->
+    <bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close">
+    	<property name="driverClassName" value="${driverClassName}"/>
+    	<property name="url" value="${url}"/>
+    	<property name="username" value="${username}"/>
+    	<property name="password" value="${password}"/> 
+    </bean>
+    
+    <!-- 配置mybatis的SqlSessionFactory -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+    	<property name="dataSource" ref="dataSource"/>
+    	<property name="mapperLocations" value="classpath:com/hegongshan/mooc/mapper/*.xml"/>
+    	<property name="configLocation" value="classpath:mybatis-config.xml"/>
+    </bean>
+    
+    <!-- dao所在包名，spring会自动查找其下的类 -->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+    	<property name="basePackage" value="com.hegongshan.mooc.dao"/>
+    	<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
+    </bean>
+    
+    <!-- 事务管理 -->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+    	<property name="dataSource" ref="dataSource"/>
+    </bean>
+    
+    <!-- 邮件 --> 
+    <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+    	<property name="host" value="${mailSender.host}"></property>
+    	<property name="username" value="${mailSender.username}"></property>
+    	<property name="password" value="${mailSender.password}"></property>
+    	<property name="defaultEncoding" value="${mailSender.defaultEncoding}"></property>
+    </bean> 
+    
+    <!-- shiro rememberMe配置 
+        <bean id="rememberMeCookie" class="org.apache.shiro.web.servlet.SimpleCookie">
+    	<constructor-arg value="rememberMe"></constructor-arg>
+    	<property name="httpOnly" value="true"></property>
+    	<property name="maxAge" value="604800"></property>
+    </bean>
+    remember管理器 
+    <bean id="rememberMeManager" class="org.apache.shiro.web.mgt.CookieRememberMeManager">
+    	cipherKey是加密rememberMe Cookie的密钥 
+    	<property name="cipherKey" value="#{T(org.apache.shiro.codec.Base64).decode('4AvVhmFLUs0KTA3Kprsdag==')}"></property>
+    	<property name="cookie" ref="rememberMeCookie"></property>
+    </bean>
+    安全管理器 
+    <bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
+        <property name="rememberMeManager" ref="rememberMeManager" />
+    </bean>
+	<bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
+	    <property name="filterChainDefinitions">
+	        <value>
+	            /logout = logout
+	            /authenticated.jsp = authc
+	            /** = user
+	        </value>
+	    </property>
+	</bean> -->
+</beans>

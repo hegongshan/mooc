@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<mapper namespace="com.hegongshan.mooc.dao.ICarouselDAO">
+	<resultMap type="carousel" id="carouselResult">
+		<id property="carouselId" column="carousel_id"/>
+		<result property="priority" column="priority"/>
+		<association property="course" column="course_id" 
+		select="com.hegongshan.mooc.dao.ICourseDAO.getCourseById"></association>
+	</resultMap>
+	
+	<insert id="saveCarousel" parameterType="carousel">
+		insert into t_carousel(priority,course_id)
+		values(#{priority},#{course.courseId})
+	</insert>
+	
+	<delete id="removeCarouselByPriority" parameterType="Integer">
+		delete from t_carousel 
+		where priority = #{priority}
+	</delete>
+	
+	<update id="updateCarousel" parameterType="carousel">
+		update t_carousel
+		<set>
+			<if test="course != null">
+				course_id = #{course.courseId},
+			</if>
+			<if test="priority != null and priority != ''">
+				priority = #{priority},
+			</if>
+		</set>
+		where carousel_id = #{carouselId}
+	</update>
+			
+	<select id="listCarousel" resultMap="carouselResult">
+		select * 
+		from t_carousel
+		order by priority asc
+	</select>
+	
+	<select id="getCarouselByPriority" parameterType="Integer" resultMap="carouselResult">
+		select * 
+		from t_carousel
+		where priority = #{priority}
+	</select>
+	
+	<select id="countCarousel" resultType="Integer">
+		select count(priority)
+		from t_carousel
+	</select>
+	
+</mapper>

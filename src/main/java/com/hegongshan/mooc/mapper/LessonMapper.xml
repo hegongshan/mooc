@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<mapper namespace="com.hegongshan.mooc.dao.ILessonDAO">
+	<resultMap type="lesson" id="lessonResult">
+		<id property="lessonId" column="lesson_id"/>
+		<result property="lessonName" column="lesson_name"/>
+		<result property="url" column="url"/>
+		<result property="releaseTime" column="release_time"/>
+		<association property="course" column="course_id" select="com.hegongshan.mooc.dao.ICourseDAO.getCourseById"></association>	
+	</resultMap>
+	
+	<insert id="saveLesson" parameterType="lesson">
+		insert into t_lesson(lesson_name,url,release_time,course_id)
+		values(#{lessonName},#{url},now(),#{course.courseId})
+	</insert>
+	
+	<delete id="removeLessonById" parameterType="Integer">
+		delete from t_lesson where lesson_id = #{lessonId}
+	</delete>
+		
+	<update id="updateLesson" parameterType="lesson">
+		update t_lesson
+		<set>
+			<if test="lessonName != null">
+				lesson_name = #{lessonName},
+			</if>
+			<if test="url != null">
+				url = #{url},
+			</if>
+		</set>
+		where lesson_id = #{lessonId}
+	</update>
+	
+	<select id="getLessonById" parameterType="Integer" resultMap="lessonResult">
+		select * 
+		from t_lesson
+		where lesson_id = #{lessonId}
+	</select>
+	
+	<select id="listLessonByCourseId" parameterType="Integer" resultMap="lessonResult">
+		select * 
+		from t_lesson
+		where course_id = #{courseId}
+	</select>
+</mapper>

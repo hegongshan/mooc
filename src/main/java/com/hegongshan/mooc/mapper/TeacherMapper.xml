@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<mapper namespace="com.hegongshan.mooc.dao.ITeacherDAO">
+	<resultMap type="teacher" id="TeacherResult">
+		<id property="teacherId" column="teacher_id"/>
+		<result property="username" column="username"/>
+		<result property="password" column="password"/>
+		<result property="realname" column="realname"/>
+		<result property="nickname" column="nickname"/>
+		<result property="email" column="email"/>
+		<result property="imageSrc" column="image_src"/>
+		<result property="sex" column="sex"/>
+		<result property="birthday" column="birthday"/>
+		<result property="address" column="address"/>	
+		<result property="profile" column="profile"/>	
+		<result property="field" column="field"/>
+		<result property="status" column="status"/>
+		<result property="activeCode" column="active_code"/>
+		<result property="registerTime" column="register_time"/>
+		<association property="courses" column="teacher_id" select="com.hegongshan.mooc.dao.ICourseDAO.listCourseByTeacherId"></association>
+	</resultMap>
+	
+	<insert id="saveTeacher" parameterType="teacher">
+		insert into t_teacher (username,password,realname,field,email,active_code,register_time) 
+		values (#{username},#{password},#{realname},#{field},#{email},#{activeCode},now())
+	</insert>
+	
+	<update id="updateTeacher" parameterType="teacher">
+		update t_teacher
+		<set>
+			<if test="password != null and password != ''">
+				password = #{password},
+			</if>
+			<if test="status != null">
+				status = #{status},
+			</if>
+			<if test="nickname != null">
+				nickname = #{nickname},
+			</if>
+			<if test="imageSrc != null">
+				image_src = #{imageSrc},
+			</if>
+			<if test="birthday != null">
+				birthday = #{birthday},
+			</if>
+			<if test="sex != null">
+				sex = #{sex},
+			</if>
+			<if test="address != null">
+				address = #{address},
+			</if>
+			<if test="profile != null">
+				profile = #{profile}
+			</if>
+		</set>
+		where teacher_id = #{teacherId}
+	</update>
+	
+	<delete id="removeTeacher" parameterType="Integer">
+		delete from t_teacher 
+		where teacher_id = #{teacherId}
+	</delete>
+	
+	<select id="getTeacherById" parameterType="Integer" resultMap="TeacherResult">
+		select *
+		from t_teacher
+		where teacher_id = #{teacherId} 
+	</select>
+	
+	<select id="getTeacherByUsername" parameterType="String" resultMap="TeacherResult">
+		select *
+		from t_teacher
+		where username = #{username} 
+	</select>
+	
+	<select id="getTeacherByUsernameAndPassword" parameterType="teacher" resultMap="TeacherResult" >
+		select *
+		from t_teacher 
+		where username = #{username} and password = #{password}
+	</select>
+	
+	<select id="listTeacherByCondition" parameterType="Map" resultMap="TeacherResult">
+		select * from t_teacher
+		<choose>
+			<when test="condition == 'whitelist'">
+				where status != 2
+			</when>
+			<when test="condition == 'blacklist'">
+				where status = 2
+			</when>
+		</choose>
+	</select>
+	
+	<select id="listTeacherByNameLike" parameterType="String" resultMap="TeacherResult">
+		<bind name="pattern" value="'%' + _parameter + '%'" />
+		select * from t_teacher where realname like #{pattern}
+	</select>
+</mapper>
